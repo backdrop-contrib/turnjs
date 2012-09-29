@@ -68,16 +68,6 @@ function theme_turnjs_imagefield($variables) {
     $image = theme('image', $variables['image']);
   }
 
-  $options = array(
-    'html' => TRUE,
-    'attributes' => array(
-     // 'title' => $variables['title'],
-      'class' => implode(' ', $class),
-    //  'rel' => $variables['gid'],
-    )
-  );
-
   return $image;
-
 
 };

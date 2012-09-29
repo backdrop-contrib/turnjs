@@ -117,13 +117,10 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
   _turnjs_load_header();
 
   $element = array();
-  foreach ($items as $delta => $item) {
-    $images[] = $item;
-  };
 
   $element[0] = array(
     '#theme' => 'turnjs_image_formatter',
-    '#items' => $images,
+    '#items' => $items,
     '#node' => $entity,
     '#field' => $field,
     '#display_settings' => $display['settings'],
@@ -131,31 +128,51 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
     '#suffix' => '</div>',
   );
 
-  // first image is always going to determine the flip-book page dimensions.
+  // Look for the largest dimensions and apply 
   $dimensions = array(
     'width' => '',
     'height' => '',
   );
-  image_style_transform_dimensions($display['settings']['turnjs_image_style'], $dimensions);
-  $var['width'] = $dimensions['width'];
-  $var['height'] = $dimensions['height'];
-  $var['path'] = image_style_path($display['settings']['turnjs_image_style'], $images[0]['uri']);
-  $image_info = image_get_info($var['path']);
+
+  $max_width = 0;
+  $max_height = 0;
+
+  if (!empty($display['settings']['turnjs_image_style'])) {
+
+    foreach($items as $item) {
+
+      $image_info = image_get_info(image_style_path($display['settings']['turnjs_image_style'], $item['uri']));
+
+      if ($image_info['width']>$max_width) $max_width = $image_info['width'];
+      if ($image_info['height']>$max_height) $max_height = $image_info['height'];
+
+    }
+
+  } else {
+
+    foreach($items as $item) {
+
+      if ($item['width']>$max_width) $max_width = $item['width'];
+      if ($item['height']>$max_height) $max_height = $item['height'];
+
+    }
+
+  }
 
   // Change the display's size depending on settings
 
   if ($display['settings']['turnjs_page_display']=="single") {
 
-    $width = $image_info['width'] * 1;
+    $width = $max_width * 1;
 
   } 
   else {
 
-    $width = $image_info['width'] * 2;
+    $width = $max_width * 2;
 
   }
 
-  $height = $image_info['height'];
+  $height = $max_height;
   $settings['turnjs']['page-width'] = $width;
   $settings['turnjs']['page-height'] = $height;
   $settings['turnjs']['page-display'] = $display['settings']['turnjs_page_display'];
