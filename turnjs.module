@@ -1,0 +1,225 @@
+<?php
+/**
+ * @file
+ * A light-weight, customizable turn.js plugin for Jquery 1.7 or later
+ */
+
+/**
+ * The default path to the turn.js directory.
+ */
+define('TURNJS_PATH', 'sites/all/libraries/turn.js');
+
+/**
+ * Implements hook_theme().
+ */
+function turnjs_theme() {
+
+  return array(
+    'turnjs_imagefield' => array(
+      'variables' => array(
+        'image' => array(),
+        'path' => NULL,
+      ),
+    ),
+    'turnjs_image_formatter' => array(
+      'variables' => array(
+        'items' => array(),
+        'node' => NULL,
+        'field' => array(),
+        'display_settings' => array(),
+      ),
+      'file' => 'turnjs.theme.inc',
+    ),
+  );
+
+};
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function turnjs_field_formatter_info() {
+
+  //TODO: hard-coded width and height values.
+
+  return array(
+    'turnjs' => array(
+      'label' => t('turn.js'),
+      'field types' => array('image'),
+      'settings' => array(
+        'turnjs_image_style' => '',
+        'turnjs_page_width' => '480',
+        'turnjs_page_height' => '320',
+      ),
+    ),
+  );
+
+}
+
+/**
+ * Implementstion
+ */
+function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  
+  $image_styles = image_style_options(FALSE);
+  $image_styles_hide = $image_styles;
+  $image_styles_hide['hide'] = t('Hide (do not display image)');
+
+  $element['turnjs_image_style'] = array(
+    '#title' => t('Turn.js page image style'),
+    '#type' => 'select',
+    '#default_value' => $settings['turnjs_image_style'],
+    '#empty_option' => t('None (original image)'),
+    '#options' => $image_styles,
+    '#description' => t('Image style to use in turn.js. Note: The first image will determine the flip-book page dimensions.'),
+  );
+
+  return $element;
+
+};
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function turnjs_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $summary = array();
+
+  $image_styles = image_style_options(FALSE);
+  // Unset possible 'No defined styles' option.
+  unset($image_styles['']);
+
+  if (isset($image_styles[$settings['turnjs_image_style']])) {
+      $summary[] = t('turn.js Image Style: @style', array('@style' => $image_styles[$settings['turnjs_image_style']]));
+  }
+  else {
+    $summary[] = t('turn.js image style: Original image'); 
+  };
+  
+  return implode('<br />', $summary);
+
+};
+
+/**
+ * Implements hook_field_formatter_view()
+ */
+function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+
+  _turnjs_load_header();
+
+  $element = array();
+  foreach ($items as $delta => $item) {
+    $images[] = $item;
+  };
+
+    $element[0] = array(
+      '#theme' => 'turnjs_image_formatter',
+      '#items' => $images,
+      '#node' => $entity,
+      '#field' => $field,
+      '#display_settings' => $display['settings'],
+      '#prefix' => '<div class="drupal-turnjs">',
+      '#suffix' => '</div>',
+    );
+
+  // first image is always going to determine the flip-book page dimensions.
+  $dimensions = array(
+    'width' => '',
+    'height' => '',
+  );
+  image_style_transform_dimensions($display['settings']['turnjs_image_style'], $dimensions);
+  $var['width'] = $dimensions['width'];
+  $var['height'] = $dimensions['height'];
+  $var['path'] = image_style_path($display['settings']['turnjs_image_style'], $images[0]['uri']);
+  $image_info = image_get_info($var['path']);
+
+  // it's a flip-book so the width is double that of an individual image.
+  $width = $image_info['width'] * 2;
+  $height = $image_info['height'];
+  $settings['turnjs']['page-width'] = $width;
+  $settings['turnjs']['page-height'] = $height;
+  drupal_add_js($settings, 'setting');
+
+  return $element;
+};
+
+/**
+ * Loads the various js and css files.
+ */
+function _turnjs_load_header() {
+  static $already_added = FALSE;
+  if ($already_added) {
+    return; // Don't add the js and css multiple times.
+  }
+
+  $path = drupal_get_path('module', 'turnjs');
+
+  drupal_add_js(turnjs_get_js());
+  drupal_add_js($path . '/js/turnjs.js');
+
+  drupal_add_css($path . '/css/turnjs.css');
+
+  $already_added = TRUE;
+}
+
+/** 
+ * Return the js filename for turn.js plugin
+ * 
+ * @return
+ *  Boolean value indicating if the js file has been found.
+ */
+function turnjs_get_js() {
+  $library_path = turnjs_get_path();
+
+  if (file_exists($library_path . '/turn.js') && file_exists($library_path . '/turn.min.js')) {
+    $turnjs_js_map = array('none' => 'turn.js', 'min' => 'turn.min.js');
+    $turnjs_js = $turnjs_js_map[variable_get('turnjs_compression_type', 'min')];
+    $path =  $library_path . '/' . $turnjs_js;
+    return $path ;
+  }
+
+  return $library_path;
+}
+
+/**
+ * Return the path to the turn.js plugin.
+ */
+function turnjs_get_path() {
+  static $library_path = NULL;
+
+  // Try to locate the library path in any possible setup.
+  if ($library_path == NULL) {
+    // First check the default location.
+    $path = variable_get('turnjs_path', TURNJS_PATH);
+    if (is_dir($path . '/turn.js')) {
+      $library_path = $path;
+    }
+    // Ask the libraries module as a fallback.
+    elseif ($library_path == NULL && module_exists('libraries')) {
+      if ($path = libraries_get_path('turn.js')) {
+        $library_path = $path;
+        variable_set('turnjs_path', $library_path);
+      }
+    }
+    // HACK: If libraries api module is not installed but available, load it.
+    elseif ($library_path == NULL && file_exists(dirname(__FILE__) . '/../librar
+ies/libraries.module')) {
+      require_once(dirname(__FILE__) . '/../libraries/libraries.module');
+      if ($path = libraries_get_path('turn.js')) {
+        $library_path = $path;
+        variable_set('turnjs_path', $library_path);
+      }
+    }
+    // If no path is found suggest the default one.
+    elseif ($library_path == NULL) {      
+      $library_path = TURNJS_PATH;
+    }
+  }
+
+  return $library_path;
+}
+
