@@ -1,5 +1,8 @@
 name = turnjs
+description = This module allows users to create online flip-books using <a href="http://www.turnjs.com/">turn.js</a>.
 core = 7.x
-
+package = User interface
+dependencies[] = libraries
 files[] = turnjs.module
 files[] = turnjs.theme.inc
+files[] = js/turnjs.js
