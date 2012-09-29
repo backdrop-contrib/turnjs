@@ -1,1 +1,5 @@
 name = turnjs
+core = 7.x
+
+files[] = turnjs.module
+files[] = turnjs.theme.inc

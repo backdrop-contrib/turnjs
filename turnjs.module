@@ -153,73 +153,51 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
 function _turnjs_load_header() {
   static $already_added = FALSE;
   if ($already_added) {
-    return; // Don't add the js and css multiple times.
+    return; // Don't add the js multiple times.
   }
 
-  $path = drupal_get_path('module', 'turnjs');
+  if(turnjs_get_library_file()) {
 
-  drupal_add_js(turnjs_get_js());
-  drupal_add_js($path . '/js/turnjs.js');
+    drupal_add_js(turnjs_get_library_file());
 
-  drupal_add_css($path . '/css/turnjs.css');
+  } else {
+
+    drupal_set_message(t("Turn.js library can't be found! Place it in <em>sites/all/libraries</em>."));
+
+  }
+
+  drupal_add_js(drupal_get_path('module', 'turnjs') . '/js/turnjs.js');
 
   $already_added = TRUE;
-}
 
-/** 
- * Return the js filename for turn.js plugin
- * 
- * @return
- *  Boolean value indicating if the js file has been found.
- */
-function turnjs_get_js() {
-  $library_path = turnjs_get_path();
-
-  if (file_exists($library_path . '/turn.js') && file_exists($library_path . '/turn.min.js')) {
-    $turnjs_js_map = array('none' => 'turn.js', 'min' => 'turn.min.js');
-    $turnjs_js = $turnjs_js_map[variable_get('turnjs_compression_type', 'min')];
-    $path =  $library_path . '/' . $turnjs_js;
-    return $path ;
-  }
-
-  return $library_path;
 }
 
 /**
- * Return the path to the turn.js plugin.
+ * Helper function gets the path to the library directory
  */
-function turnjs_get_path() {
-  static $library_path = NULL;
+function turnjs_get_library_path() {
 
-  // Try to locate the library path in any possible setup.
-  if ($library_path == NULL) {
-    // First check the default location.
-    $path = variable_get('turnjs_path', TURNJS_PATH);
-    if (is_dir($path . '/turn.js')) {
-      $library_path = $path;
-    }
-    // Ask the libraries module as a fallback.
-    elseif ($library_path == NULL && module_exists('libraries')) {
-      if ($path = libraries_get_path('turn.js')) {
-        $library_path = $path;
-        variable_set('turnjs_path', $library_path);
-      }
-    }
-    // HACK: If libraries api module is not installed but available, load it.
-    elseif ($library_path == NULL && file_exists(dirname(__FILE__) . '/../librar
-ies/libraries.module')) {
-      require_once(dirname(__FILE__) . '/../libraries/libraries.module');
-      if ($path = libraries_get_path('turn.js')) {
-        $library_path = $path;
-        variable_set('turnjs_path', $library_path);
-      }
-    }
-    // If no path is found suggest the default one.
-    elseif ($library_path == NULL) {      
-      $library_path = TURNJS_PATH;
-    }
+  // If Libraries API is enabled, make sure the file exists before pointing there
+  if (function_exists('libraries_get_path') && file_exists(libraries_get_path('turn.js'))) {
+    $path = libraries_get_path('turn.js');
+  }
+  // If the library can't be found, return NULL
+  else {
+    $path = NULL;
   }
 
-  return $library_path;
+  return $path;
 }
 
+/**
+ * Helper function gets the path to the library Javascript file
+ */
+function turnjs_get_library_file() {
+
+  // Try loading the minified version first. If not found, try the regular version.
+  if(file_exists(turnjs_get_library_path() . '/turn.min.js')) {
+    return turnjs_get_library_path() . '/turn.min.js';
+  } else {
+    return turnjs_get_library_path() . '/turn.js';
+  }
+}
