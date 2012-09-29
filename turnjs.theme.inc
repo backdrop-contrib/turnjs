@@ -60,12 +60,8 @@ function theme_turnjs_image_formatter($variables) {
 function theme_turnjs_imagefield($variables) {
 
   $class = array('turnjs');
-
-  if ($variables['image']['style_name'] == 'hide') {
-    $image = '';
-    $class[] = 'js-hide';
-  }
-  else if (!empty($variables['image']['style_name'])) {
+ 
+  if (!empty($variables['image']['style_name'])) {
     $image = theme('image_style', $variables['image']);
   }
   else {

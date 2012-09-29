@@ -58,8 +58,6 @@ function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $fo
   $settings = $display['settings'];
   
   $image_styles = image_style_options(FALSE);
-  $image_styles_hide = $image_styles;
-  $image_styles_hide['hide'] = t('Hide (do not display image)');
 
   $element['turnjs_image_style'] = array(
     '#title' => t('Turn.js page image style'),
@@ -104,6 +102,8 @@ function turnjs_field_formatter_settings_summary($field, $instance, $view_mode) 
   else {
     $summary[] = t('Turn.js image style: Original image'); 
   };
+
+  $summary[] = t('Turn.js display style: @display', array('@display' => ucfirst($settings['turnjs_page_display']))); 
   
   return implode('<br />', $summary);
 
@@ -144,11 +144,12 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
 
   // Change the display's size depending on settings
 
-  if($display['settings']['turnjs_page_display']=="single") {
+  if ($display['settings']['turnjs_page_display']=="single") {
 
     $width = $image_info['width'] * 1;
 
-  } else {
+  } 
+  else {
 
     $width = $image_info['width'] * 2;
 
@@ -172,12 +173,13 @@ function _turnjs_load_header() {
     return; // Don't add the js multiple times.
   }
 
-  if(turnjs_get_library_file()) {
+  if (turnjs_get_library_file()) {
 
     drupal_add_js(turnjs_get_library_file());
     drupal_add_js(drupal_get_path('module', 'turnjs') . '/js/turnjs.js');
 
-  } else {
+  } 
+  else {
 
     drupal_set_message(t("Turn.js library can't be found! Place it in <em>sites/all/libraries</em>."));
 
@@ -196,9 +198,9 @@ function turnjs_get_library_path() {
   if (function_exists('libraries_get_path') && file_exists(libraries_get_path('turn.js'))) {
     $path = libraries_get_path('turn.js');
   }
-  // If the library can't be found, return false
+  // If the library can't be found, return FALSE
   else {
-    $path = false;
+    $path = FALSE;
   }
 
   return $path;
@@ -210,11 +212,13 @@ function turnjs_get_library_path() {
 function turnjs_get_library_file() {
 
   // Try loading the minified version first. If not found, try the regular version.
-  if(file_exists(turnjs_get_library_path() . '/turn.min.js')) {
+  if (file_exists(turnjs_get_library_path() . '/turn.min.js')) {
     return turnjs_get_library_path() . '/turn.min.js';
-  } else if(file_exists(turnjs_get_library_path() . '/turn.js')) {
+  } 
+  elseif (file_exists(turnjs_get_library_path() . '/turn.js')) {
     return turnjs_get_library_path() . '/turn.js';
-  } else {
-    return false;
+  } 
+  else {
+    return FALSE;
   }
 }
