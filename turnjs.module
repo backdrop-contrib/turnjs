@@ -1,13 +1,8 @@
 <?php
 /**
  * @file
- * A light-weight, customizable turn.js plugin for Jquery 1.7 or later
+ * A light-weight, customizable turn.js plugin for Jquery 1.3 or later
  */
-
-/**
- * The default path to the turn.js directory.
- */
-define('TURNJS_PATH', 'sites/all/libraries/turn.js');
 
 /**
  * Implements hook_theme().
@@ -39,16 +34,14 @@ function turnjs_theme() {
  */
 function turnjs_field_formatter_info() {
 
-  //TODO: hard-coded width and height values.
-
   return array(
     'turnjs' => array(
       'label' => t('turn.js'),
       'field types' => array('image'),
       'settings' => array(
         'turnjs_image_style' => '',
-        'turnjs_page_width' => '480',
-        'turnjs_page_height' => '320',
+        'turnjs_page_width' => '',
+        'turnjs_page_height' => '',
       ),
     ),
   );
@@ -73,7 +66,7 @@ function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $fo
     '#default_value' => $settings['turnjs_image_style'],
     '#empty_option' => t('None (original image)'),
     '#options' => $image_styles,
-    '#description' => t('Image style to use in turn.js. Note: The first image will determine the flip-book page dimensions.'),
+    '#description' => t('Image style to use in Turn.js. Note: The first image will determine the flip-book page dimensions.'),
   );
 
   return $element;
@@ -94,10 +87,10 @@ function turnjs_field_formatter_settings_summary($field, $instance, $view_mode) 
   unset($image_styles['']);
 
   if (isset($image_styles[$settings['turnjs_image_style']])) {
-      $summary[] = t('turn.js Image Style: @style', array('@style' => $image_styles[$settings['turnjs_image_style']]));
+      $summary[] = t('Turn.js Image Style: @style', array('@style' => $image_styles[$settings['turnjs_image_style']]));
   }
   else {
-    $summary[] = t('turn.js image style: Original image'); 
+    $summary[] = t('Turn.js image style: Original image'); 
   };
   
   return implode('<br />', $summary);
@@ -116,15 +109,15 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
     $images[] = $item;
   };
 
-    $element[0] = array(
-      '#theme' => 'turnjs_image_formatter',
-      '#items' => $images,
-      '#node' => $entity,
-      '#field' => $field,
-      '#display_settings' => $display['settings'],
-      '#prefix' => '<div class="drupal-turnjs">',
-      '#suffix' => '</div>',
-    );
+  $element[0] = array(
+    '#theme' => 'turnjs_image_formatter',
+    '#items' => $images,
+    '#node' => $entity,
+    '#field' => $field,
+    '#display_settings' => $display['settings'],
+    '#prefix' => '<div class="drupal-turnjs">',
+    '#suffix' => '</div>',
+  );
 
   // first image is always going to determine the flip-book page dimensions.
   $dimensions = array(
@@ -159,14 +152,13 @@ function _turnjs_load_header() {
   if(turnjs_get_library_file()) {
 
     drupal_add_js(turnjs_get_library_file());
+    drupal_add_js(drupal_get_path('module', 'turnjs') . '/js/turnjs.js');
 
   } else {
 
     drupal_set_message(t("Turn.js library can't be found! Place it in <em>sites/all/libraries</em>."));
 
   }
-
-  drupal_add_js(drupal_get_path('module', 'turnjs') . '/js/turnjs.js');
 
   $already_added = TRUE;
 
@@ -181,9 +173,9 @@ function turnjs_get_library_path() {
   if (function_exists('libraries_get_path') && file_exists(libraries_get_path('turn.js'))) {
     $path = libraries_get_path('turn.js');
   }
-  // If the library can't be found, return NULL
+  // If the library can't be found, return false
   else {
-    $path = NULL;
+    $path = false;
   }
 
   return $path;
@@ -197,7 +189,9 @@ function turnjs_get_library_file() {
   // Try loading the minified version first. If not found, try the regular version.
   if(file_exists(turnjs_get_library_path() . '/turn.min.js')) {
     return turnjs_get_library_path() . '/turn.min.js';
-  } else {
+  } else if(file_exists(turnjs_get_library_path() . '/turn.js')) {
     return turnjs_get_library_path() . '/turn.js';
+  } else {
+    return false;
   }
 }
