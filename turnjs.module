@@ -42,6 +42,7 @@ function turnjs_field_formatter_info() {
         'turnjs_image_style' => '',
         'turnjs_page_width' => '',
         'turnjs_page_height' => '',
+        'turnjs_page_display' => 'double',
       ),
     ),
   );
@@ -67,6 +68,17 @@ function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $fo
     '#empty_option' => t('None (original image)'),
     '#options' => $image_styles,
     '#description' => t('Image style to use in Turn.js. Note: The first image will determine the flip-book page dimensions.'),
+  );
+
+  $element['turnjs_page_display'] = array(
+    '#title' => t('Turn.js page display size'),
+    '#type' => 'select',
+    '#default_value' => $settings['turnjs_page_display'],
+    "#options" => array(
+      'single' => t('Single'),
+      'double' => t('Double')
+    ),
+    '#description' => t('Whether to show single page or double pages.'),
   );
 
   return $element;
@@ -130,11 +142,22 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
   $var['path'] = image_style_path($display['settings']['turnjs_image_style'], $images[0]['uri']);
   $image_info = image_get_info($var['path']);
 
-  // it's a flip-book so the width is double that of an individual image.
-  $width = $image_info['width'] * 2;
+  // Change the display's size depending on settings
+
+  if($display['settings']['turnjs_page_display']=="single") {
+
+    $width = $image_info['width'] * 1;
+
+  } else {
+
+    $width = $image_info['width'] * 2;
+
+  }
+
   $height = $image_info['height'];
   $settings['turnjs']['page-width'] = $width;
   $settings['turnjs']['page-height'] = $height;
+  $settings['turnjs']['page-display'] = $display['settings']['turnjs_page_display'];
   drupal_add_js($settings, 'setting');
 
   return $element;

@@ -1,10 +1,9 @@
 jQuery(document).ready(function(){
-  var width = Drupal.settings.turnjs['page-width'];
-  var height = Drupal.settings.turnjs['page-height'];
 
   jQuery('.drupal-turnjs').turn({
-    'width': width,
-    'height': height,
+    'width': Drupal.settings.turnjs['page-width'],
+    'height': Drupal.settings.turnjs['page-height'],
+    'display': Drupal.settings.turnjs['page-display']
   });
 
 });
