@@ -50,13 +50,13 @@ function turnjs_field_formatter_info() {
 }
 
 /**
- * Implementstion
+ * Implementation.
  */
 function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
 
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  
+
   $image_styles = image_style_options(FALSE);
 
   $element['turnjs_image_style'] = array(
@@ -74,7 +74,7 @@ function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $fo
     '#default_value' => $settings['turnjs_page_display'],
     "#options" => array(
       'single' => t('Single'),
-      'double' => t('Double')
+      'double' => t('Double'),
     ),
     '#description' => t('Whether to show single page or double pages.'),
   );
@@ -97,20 +97,20 @@ function turnjs_field_formatter_settings_summary($field, $instance, $view_mode) 
   unset($image_styles['']);
 
   if (isset($image_styles[$settings['turnjs_image_style']])) {
-      $summary[] = t('Turn.js Image Style: @style', array('@style' => $image_styles[$settings['turnjs_image_style']]));
+    $summary[] = t('Turn.js Image Style: @style', array('@style' => $image_styles[$settings['turnjs_image_style']]));
   }
   else {
-    $summary[] = t('Turn.js image style: Original image'); 
+    $summary[] = t('Turn.js image style: Original image');
   };
 
-  $summary[] = t('Turn.js display style: @display', array('@display' => ucfirst($settings['turnjs_page_display']))); 
-  
+  $summary[] = t('Turn.js display style: @display', array('@display' => ucfirst($settings['turnjs_page_display'])));
+
   return implode('<br />', $summary);
 
 };
 
 /**
- * Implements hook_field_formatter_view()
+ * Implements hook_field_formatter_view().
  */
 function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
 
@@ -128,7 +128,7 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
     '#suffix' => '</div>',
   );
 
-  // Look for the largest dimensions and apply 
+  // Look for the largest dimensions and apply.
   $dimensions = array(
     'width' => '',
     'height' => '',
@@ -139,33 +139,37 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
 
   if (!empty($display['settings']['turnjs_image_style'])) {
 
-    foreach($items as $item) {
+    foreach ($items as $item) {
 
       $image_info = image_get_info(image_style_path($display['settings']['turnjs_image_style'], $item['uri']));
 
-      if ($image_info['width']>$max_width) $max_width = $image_info['width'];
-      if ($image_info['height']>$max_height) $max_height = $image_info['height'];
+      if ($image_info['width'] > $max_width) 
+        $max_width = $image_info['width'];
+      if ($image_info['height'] > $max_height) 
+        $max_height = $image_info['height'];
 
     }
 
-  } else {
+  }
+  else {
 
-    foreach($items as $item) {
+    foreach ($items as $item) {
 
-      if ($item['width']>$max_width) $max_width = $item['width'];
-      if ($item['height']>$max_height) $max_height = $item['height'];
+      if ($item['width'] > $max_width) 
+        $max_width = $item['width'];
+      if ($item['height'] > $max_height) 
+        $max_height = $item['height'];
 
     }
 
   }
 
   // Change the display's size depending on settings
-
-  if ($display['settings']['turnjs_page_display']=="single") {
+  if ($display['settings']['turnjs_page_display'] == "single") {
 
     $width = $max_width * 1;
 
-  } 
+  }
   else {
 
     $width = $max_width * 2;
@@ -185,9 +189,10 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
  * Loads the various js and css files.
  */
 function _turnjs_load_header() {
+  // Don't add the JS multiple times
   static $already_added = FALSE;
   if ($already_added) {
-    return; // Don't add the js multiple times.
+    return;
   }
 
   if (turnjs_get_library_file()) {
@@ -207,7 +212,7 @@ function _turnjs_load_header() {
 }
 
 /**
- * Helper function gets the path to the library directory
+ * Helper function gets the path to the library directory.
  */
 function turnjs_get_library_path() {
 
@@ -224,17 +229,17 @@ function turnjs_get_library_path() {
 }
 
 /**
- * Helper function gets the path to the library Javascript file
+ * Helper function gets the path to the library Javascript file.
  */
 function turnjs_get_library_file() {
 
   // Try loading the minified version first. If not found, try the regular version.
   if (file_exists(turnjs_get_library_path() . '/turn.min.js')) {
     return turnjs_get_library_path() . '/turn.min.js';
-  } 
+  }
   elseif (file_exists(turnjs_get_library_path() . '/turn.js')) {
     return turnjs_get_library_path() . '/turn.js';
-  } 
+  }
   else {
     return FALSE;
   }

@@ -6,8 +6,8 @@
 
 /**
  * Returns HTML for a Turn.js image field formatter.
- * 
- * @param $variables
+ *
+ *  @param $variables
  *  An associative array containing:
  *  - item: An array of image data.
  *  - image_style: An optional image style.
@@ -41,7 +41,7 @@ function theme_turnjs_image_formatter($variables) {
       $path = file_create_url($image['path']);
     };
 
-     $images .= theme('turnjs_imagefield', array('image' => $image, 'path' => $path));
+    $images .= theme('turnjs_imagefield', array('image' => $image, 'path' => $path));
 
   };
 
@@ -51,8 +51,8 @@ function theme_turnjs_image_formatter($variables) {
 
 /**
  * Returns HTML for an image using a specific Turn.js image style.
- * 
- * @param $variables
+ *
+ *  @param $variables
  *  An associative array containing:
  *  - image: image item as array.
  *  - path: The path of the image that should be displayed Turn.js pages.
@@ -60,7 +60,7 @@ function theme_turnjs_image_formatter($variables) {
 function theme_turnjs_imagefield($variables) {
 
   $class = array('turnjs');
- 
+
   if (!empty($variables['image']['style_name'])) {
     $image = theme('image_style', $variables['image']);
   }

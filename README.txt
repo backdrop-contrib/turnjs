@@ -14,4 +14,3 @@ Licensing
 ---------
 
 Please refer to http://www.turnjs.com/get for licensing details.
-
