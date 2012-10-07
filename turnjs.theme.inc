@@ -1,17 +1,11 @@
 <?php
 /**
  * @file
- * Megaturn theme functions.
+ * Turnjs theme functions.
  */
 
 /**
  * Returns HTML for a Turn.js image field formatter.
- *
- *  @param array $variables
- *    An associative array containing:
- *    - item: An array of image data.
- *    - image_style: An optional image style.
- *    - path: An array containing the link 'path' and link 'options'.
  */
 function theme_turnjs_image_formatter($variables) {
   $items = $variables['items'];
@@ -51,11 +45,6 @@ function theme_turnjs_image_formatter($variables) {
 
 /**
  * Returns HTML for an image using a specific Turn.js image style.
- *
- *  @param array $variables
- *    An associative array containing:
- *    - image: image item as array.
- *    - path: The path of the image that should be displayed Turn.js pages.
  */
 function theme_turnjs_imagefield($variables) {
 

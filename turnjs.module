@@ -206,7 +206,7 @@ function _turnjs_load_header() {
     drupal_add_js(turnjs_get_library_file());
     drupal_add_js(drupal_get_path('module', 'turnjs') . '/js/turnjs.js');
 
-  } 
+  }
   else {
 
     drupal_set_message(t("Turn.js library can't be found! Place it in <em>sites/all/libraries</em>."));
@@ -222,7 +222,7 @@ function _turnjs_load_header() {
  */
 function turnjs_get_library_path() {
 
-  // If Libraries API is enabled, make sure the file exists before pointing there.
+  // If Libraries API is enabled, make sure it exists before pointing there.
   if (function_exists('libraries_get_path') && file_exists(libraries_get_path('turn.js'))) {
     $path = libraries_get_path('turn.js');
   }
@@ -238,7 +238,7 @@ function turnjs_get_library_path() {
  */
 function turnjs_get_library_file() {
 
-  // Try loading the minified version first. If not found, try the regular version.
+  // Try loading the minified version. If not found, try the normal version.
   if (file_exists(turnjs_get_library_path() . '/turn.min.js')) {
     return turnjs_get_library_path() . '/turn.min.js';
   }
