@@ -143,10 +143,13 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
 
       $image_info = image_get_info(image_style_path($display['settings']['turnjs_image_style'], $item['uri']));
 
-      if ($image_info['width'] > $max_width) 
+      if ($image_info['width'] > $max_width) {
         $max_width = $image_info['width'];
-      if ($image_info['height'] > $max_height) 
+      }
+
+      if ($image_info['height'] > $max_height) {
         $max_height = $image_info['height'];
+      }
 
     }
 
@@ -155,16 +158,19 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
 
     foreach ($items as $item) {
 
-      if ($item['width'] > $max_width) 
+      if ($item['width'] > $max_width) {
         $max_width = $item['width'];
-      if ($item['height'] > $max_height) 
+      }
+
+      if ($item['height'] > $max_height) {
         $max_height = $item['height'];
+      }
 
     }
 
   }
 
-  // Change the display's size depending on settings
+  // Change the display's size depending on settings.
   if ($display['settings']['turnjs_page_display'] == "single") {
 
     $width = $max_width * 1;
@@ -189,7 +195,7 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
  * Loads the various js and css files.
  */
 function _turnjs_load_header() {
-  // Don't add the JS multiple times
+  // Don't add the JS multiple times.
   static $already_added = FALSE;
   if ($already_added) {
     return;
@@ -216,11 +222,10 @@ function _turnjs_load_header() {
  */
 function turnjs_get_library_path() {
 
-  // If Libraries API is enabled, make sure the file exists before pointing there
+  // If Libraries API is enabled, make sure the file exists before pointing there.
   if (function_exists('libraries_get_path') && file_exists(libraries_get_path('turn.js'))) {
     $path = libraries_get_path('turn.js');
   }
-  // If the library can't be found, return FALSE
   else {
     $path = FALSE;
   }
