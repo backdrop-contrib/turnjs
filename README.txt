@@ -1,14 +1,13 @@
 Instructions
 ------------
 
-Download and enable the module.
+Download and enable the turnjs module.
 
-Clone the turn.js repository in libraries folder:
+Clone the turn.js file into the sites/all/libraries/turnjs/ folder:
 
-cd sites/all/libraries
-(create the libraries folder if you don't have it already)
-
-git clone https://github.com/blasten/turn.js.git
+cd sites/all
+mkdir -p libraries/turnjs
+get https://raw.github.com/blasten/turn.js/master/turn.js
 
 Usage
 -----
