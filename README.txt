@@ -5,9 +5,8 @@ Download and enable the turnjs module.
 
 Clone the turn.js file into the sites/all/libraries/turnjs/ folder:
 
-cd sites/all
-mkdir -p libraries/turnjs
-wget https://raw.github.com/blasten/turn.js/master/turn.min.js
+cd sites/all/libraries
+git clone https://github.com/blasten/turn.js.git
 
 Usage
 -----
