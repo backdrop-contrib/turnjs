@@ -7,7 +7,7 @@ Clone the turn.js file into the sites/all/libraries/turnjs/ folder:
 
 cd sites/all
 mkdir -p libraries/turnjs
-get https://raw.github.com/blasten/turn.js/master/turn.js
+wget https://raw.github.com/blasten/turn.js/master/turn.min.js
 
 Usage
 -----
