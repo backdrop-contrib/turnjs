@@ -1,9 +1,13 @@
-jQuery(document).ready(function(){
+(function ($) {
 
-  jQuery('.drupal-turnjs').turn({
-    'width': Drupal.settings.turnjs['page-width'],
-    'height': Drupal.settings.turnjs['page-height'],
-    'display': Drupal.settings.turnjs['page-display']
-  });
+  Drupal.behaviors.exampleModule = {
+    attach: function (context, settings) {
+      jQuery('.drupal-turnjs').turn({
+      width: settings.turnjs.pageWidth,
+      height: settings.turnjs.pageHeight,
+      display: settings.turnjs.pageDisplay
+      });
+    }
+  };
 
-});
+})(jQuery);

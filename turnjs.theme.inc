@@ -37,7 +37,7 @@ function theme_turnjs_image_formatter($variables) {
 
     $images .= theme('turnjs_imagefield', array('image' => $image, 'path' => $path));
 
-  };
+  }
 
   return $images;
 

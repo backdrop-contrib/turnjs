@@ -183,9 +183,9 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
   }
 
   $height = $max_height;
-  $settings['turnjs']['page-width'] = $width;
-  $settings['turnjs']['page-height'] = $height;
-  $settings['turnjs']['page-display'] = $display['settings']['turnjs_page_display'];
+  $settings['turnjs']['pageWidth'] = $width;
+  $settings['turnjs']['pageHeight'] = $height;
+  $settings['turnjs']['pageDisplay'] = $display['settings']['turnjs_page_display'];
   drupal_add_js($settings, 'setting');
 
   return $element;
