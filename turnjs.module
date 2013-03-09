@@ -50,7 +50,7 @@ function turnjs_field_formatter_info() {
 }
 
 /**
- * Implementation.
+ * Implements hook_field_formatter_settings_form
  */
 function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
 
