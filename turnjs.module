@@ -205,16 +205,13 @@ function _turnjs_load_header() {
     return;
   }
 
-  if (turnjs_get_library_file()) {
-
-    backdrop_add_js(turnjs_get_library_file());
+  if ($js = turnjs_get_library_file()) {
+    backdrop_add_js($js);
     backdrop_add_js(backdrop_get_path('module', 'turnjs') . '/js/turnjs.js');
-
   }
   else {
-
+    // @todo replace with requirements check.
     backdrop_set_message(t("Turn.js library can't be found! Place it in <em>sites/all/libraries</em>."));
-
   }
 
   $already_added = TRUE;
@@ -231,7 +228,7 @@ function turnjs_get_library_path() {
     $path = libraries_get_path('turn.js');
   }
   else {
-    $path = FALSE;
+    $path = backdrop_get_path('module', 'turnjs') . '/libraries/turn.js';
   }
 
   return $path;
