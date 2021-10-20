@@ -17,7 +17,7 @@ function theme_turnjs_image_formatter($variables) {
 
   foreach ($items as $index => $item) {
     $image = array(
-      'path' => $item['uri'],
+      'uri' => $item['uri'],
       'alt' => $item['alt'],
       'title' => $item['title'],
       'style_name' => $settings['turnjs_image_style'],
@@ -29,10 +29,10 @@ function theme_turnjs_image_formatter($variables) {
     };
 
     if ($style_name = $settings['turnjs_image_style']) {
-      $path = image_style_url($style_name, $image['path']);
+      $path = image_style_url($style_name, $image['uri']);
     }
     else {
-      $path = file_create_url($image['path']);
+      $path = file_create_url($image['uri']);
     };
 
     $images .= theme('turnjs_imagefield', array('image' => $image, 'path' => $path));

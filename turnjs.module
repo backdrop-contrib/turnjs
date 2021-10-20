@@ -8,7 +8,6 @@
  * Implements hook_theme().
  */
 function turnjs_theme() {
-
   return array(
     'turnjs_imagefield' => array(
       'variables' => array(
@@ -138,15 +137,20 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
   $max_height = 0;
 
   if (!empty($display['settings']['turnjs_image_style'])) {
-
     foreach ($items as $item) {
+      $image_uri = $item['uri'];
+      $image_style = $display['settings']['turnjs_image_style'];
+      $derivative_uri = image_style_path($image_style, $image_uri);
 
-      $image_info = image_get_info(image_style_path($display['settings']['turnjs_image_style'], $item['uri']));
+      if (!file_exists($derivative_uri)) {
+        $style = image_style_load($image_style);
+        image_style_create_derivative($style, $image_uri, $derivative_uri);
+      }
 
+      $image_info = image_get_info($derivative_uri);
       if ($image_info['width'] > $max_width) {
         $max_width = $image_info['width'];
       }
-
       if ($image_info['height'] > $max_height) {
         $max_height = $image_info['height'];
       }
@@ -171,7 +175,7 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
   }
 
   // Change the display's size depending on settings.
-  if ($display['settings']['turnjs_page_display'] == "single") {
+  if ($display['settings']['turnjs_page_display'] == 'single') {
 
     $width = $max_width * 1;
 
@@ -186,7 +190,7 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
   $settings['turnjs']['pageWidth'] = $width;
   $settings['turnjs']['pageHeight'] = $height;
   $settings['turnjs']['pageDisplay'] = $display['settings']['turnjs_page_display'];
-  drupal_add_js($settings, 'setting');
+  backdrop_add_js($settings, 'setting');
 
   return $element;
 };
@@ -203,13 +207,13 @@ function _turnjs_load_header() {
 
   if (turnjs_get_library_file()) {
 
-    drupal_add_js(turnjs_get_library_file());
-    drupal_add_js(drupal_get_path('module', 'turnjs') . '/js/turnjs.js');
+    backdrop_add_js(turnjs_get_library_file());
+    backdrop_add_js(backdrop_get_path('module', 'turnjs') . '/js/turnjs.js');
 
   }
   else {
 
-    drupal_set_message(t("Turn.js library can't be found! Place it in <em>sites/all/libraries</em>."));
+    backdrop_set_message(t("Turn.js library can't be found! Place it in <em>sites/all/libraries</em>."));
 
   }
 
@@ -234,7 +238,7 @@ function turnjs_get_library_path() {
 }
 
 /**
- * Helper function gets the path to the library Javascript file.
+ * Helper function gets the path to the library JavaScript file.
  */
 function turnjs_get_library_file() {
 
