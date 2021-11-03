@@ -17,22 +17,20 @@
               $(this).find('.p1').removeClass('even');
             },
             // Fired before a page starts turning.
-            turning: function(e, page) {
+            turning: function(e, page, view) {
               //console.log('turning - next page: ' + page);
 
               if (page != 1) {
                 //console.log('turning - adding classes');
-                var view = $(this).turn('view');
-                var next_left = view[1] + 1;
-                var next_right = next_left + 1;
+                var next_left = view[0];
+                var next_right = view[1];
                 $(this).find('.p'+next_left).addClass('odd').removeClass('even');
                 $(this).find('.p'+next_right).addClass('even').removeClass('odd');
               }
 
             },
             // Fired when a page has been turned.
-            turned: function(e, page) {
-              //var view = $(this).turn('view');
+            turned: function(e, page, view) {
               //console.log('turned: ', view);
             },
           },
