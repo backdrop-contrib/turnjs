@@ -5,14 +5,54 @@
  */
 
 /**
+ * Implements hook_library_info().
+ */
+function turnjs_library_info() {
+  $path = backdrop_get_path('module', 'turnjs');
+  $libraries['turnjs'] = array(
+    'title' => 'trun.js',
+    'website' => 'http://www.turnjs.com',
+    'version' => '3',
+    'js' => array(
+      // JavaScript files are added as keys.
+       $path . '/libraries/turn.js/turn.min.js' => array(),
+       $path . '/js/turnjs.js' => array(),
+      // JavaScript settings use the 'data' key.
+      /*
+      array(
+        'type' => 'setting',
+        'data' => array(
+          //'library2' => TRUE,
+        ),
+      ),
+      */
+    ),
+    'css' => array(
+      $path . '/css/shadows.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+    'dependencies' => array(
+      // Require jQuery core by System module.
+      array('system', 'jquery'),
+      // Require jQuery UI core by System module.
+      array('system', 'ui'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Implements hook_theme().
  */
 function turnjs_theme() {
   return array(
-    'turnjs_imagefield' => array(
+    'turnjs_page' => array(
       'variables' => array(
-        'image' => array(),
         'path' => NULL,
+        'image' => array(),
       ),
     ),
     'turnjs_image_formatter' => array(
@@ -125,6 +165,7 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
     '#display_settings' => $display['settings'],
     '#prefix' => '<div class="drupal-turnjs">',
     '#suffix' => '</div>',
+    //'#attached' => array('library' => array('turnjs', 'turnjs')),
   );
 
   // Look for the largest dimensions and apply.
@@ -159,31 +200,22 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
 
   }
   else {
-
     foreach ($items as $item) {
-
       if ($item['width'] > $max_width) {
         $max_width = $item['width'];
       }
-
       if ($item['height'] > $max_height) {
         $max_height = $item['height'];
       }
-
     }
-
   }
 
   // Change the display's size depending on settings.
   if ($display['settings']['turnjs_page_display'] == 'single') {
-
     $width = $max_width * 1;
-
   }
   else {
-
     $width = $max_width * 2;
-
   }
 
   $height = $max_height;
@@ -206,8 +238,11 @@ function _turnjs_load_header() {
   }
 
   if ($js = turnjs_get_library_file()) {
+    // @todo replace with #attached.
+    $path = backdrop_get_path('module', 'turnjs');
     backdrop_add_js($js);
-    backdrop_add_js(backdrop_get_path('module', 'turnjs') . '/js/turnjs.js');
+    backdrop_add_js($path . '/js/turnjs.js');
+    backdrop_add_css($path . '/css/shadows.css');
   }
   else {
     // @todo replace with requirements check.
@@ -222,14 +257,17 @@ function _turnjs_load_header() {
  * Helper function gets the path to the library directory.
  */
 function turnjs_get_library_path() {
+  // v3
+  $path = backdrop_get_path('module', 'turnjs') . '/libraries/turn.js';
+  // v4
+  //$path = backdrop_get_path('module', 'turnjs') . '/libraries/turn.js/lib';
 
+  /*
   // If Libraries API is enabled, make sure it exists before pointing there.
   if (function_exists('libraries_get_path') && file_exists(libraries_get_path('turn.js'))) {
-    $path = libraries_get_path('turn.js');
+    $path = libraries_get_path('turn.js') . '/lib';
   }
-  else {
-    $path = backdrop_get_path('module', 'turnjs') . '/libraries/turn.js';
-  }
+  */
 
   return $path;
 }
@@ -238,9 +276,10 @@ function turnjs_get_library_path() {
  * Helper function gets the path to the library JavaScript file.
  */
 function turnjs_get_library_file() {
+  $minified = TRUE;
 
   // Try loading the minified version. If not found, try the normal version.
-  if (file_exists(turnjs_get_library_path() . '/turn.min.js')) {
+  if ($minified && file_exists(turnjs_get_library_path() . '/turn.min.js')) {
     return turnjs_get_library_path() . '/turn.min.js';
   }
   elseif (file_exists(turnjs_get_library_path() . '/turn.js')) {

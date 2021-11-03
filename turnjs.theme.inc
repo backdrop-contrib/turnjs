@@ -35,28 +35,21 @@ function theme_turnjs_image_formatter($variables) {
       $path = file_create_url($image['uri']);
     };
 
-    $images .= theme('turnjs_imagefield', array('image' => $image, 'path' => $path));
+    $images .= theme('turnjs_page', array('path' => $path, 'image' => $image));
 
   }
 
   return $images;
-
 };
 
 /**
  * Returns HTML for an image using a specific Turn.js image style.
  */
-function theme_turnjs_imagefield($variables) {
+function theme_turnjs_page($variables) {
+  $path = $variables['path'];
+  //$image = $variables['image']; // Not used. Here for alternate theme output.
 
-  $class = array('turnjs');
+  $output = '<div style="background-image:url(' . $path . ');"></div>';
 
-  if (!empty($variables['image']['style_name'])) {
-    $image = theme('image_style', $variables['image']);
-  }
-  else {
-    $image = theme('image', $variables['image']);
-  }
-
-  return $image;
-
+  return $output;
 };
