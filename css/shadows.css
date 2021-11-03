@@ -1,0 +1,44 @@
+.drupal-turnjs,
+.drupal-turnjs * {
+  box-sizing: content-box;
+}
+
+/* Adds shadows into centerfold. */
+.drupal-turnjs .turn-page.odd {
+  -webkit-box-shadow:
+    -1px 0 1px rgb(0 0 0 / 10%) inset,
+    -5px 0 5px rgb(0 0 0 / 10%) inset,
+    -10px 0 10px rgb(0 0 0 / 10%) inset,
+    -20px 0 30px rgb(0 0 0 / 10%) inset;
+}
+.drupal-turnjs .turn-page.even {
+  -webkit-box-shadow:
+    1px 0 1px rgb(0 0 0 / 10%) inset,
+    5px 0 5px rgb(0 0 0 / 10%) inset,
+    10px 0 10px rgb(0 0 0 / 10%) inset,
+    20px 0 30px rgb(0 0 0 / 10%) inset;
+}
+
+
+/* @todo Class not supported yet */
+.drupal-turnjs .cover {
+  background: #333;
+}
+.drupal-turnjs .cover h1 {
+  color:white;
+  text-align:center;
+  font-size:50px;
+  line-height:500px;
+  margin:0px;
+}
+
+/* @todo Class not supported yet */
+.drupal-turnjs .loader {
+  background-image:url(loader.gif);
+  width:24px;
+  height:24px;
+  display:block;
+  position:absolute;
+  top:238px;
+  left:188px;
+}
