@@ -107,6 +107,22 @@ function turnjs_field_formatter_settings_form($field, $instance, $view_mode, $fo
     '#description' => t('Image style to use in Turn.js. Note: The first image will determine the flip-book page dimensions.'),
   );
 
+  $element['turnjs_page_width'] = array(
+    '#title' => t('Turn.js page width'),
+    '#type' => 'number',
+    '#field_suffix' => 'px',
+    '#default_value' => $settings['turnjs_page_width'],
+    '#empty_option' => t('Automatic'),
+  );
+
+  $element['turnjs_page_height'] = array(
+    '#title' => t('Turn.js page height'),
+    '#type' => 'number',
+    '#field_suffix' => 'px',
+    '#default_value' => $settings['turnjs_page_height'],
+    '#empty_option' => t('Automatic'),
+  );
+
   $element['turnjs_page_display'] = array(
     '#title' => t('Turn.js page display size'),
     '#type' => 'select',
@@ -136,13 +152,17 @@ function turnjs_field_formatter_settings_summary($field, $instance, $view_mode) 
   unset($image_styles['']);
 
   if (isset($image_styles[$settings['turnjs_image_style']])) {
-    $summary[] = t('Turn.js Image Style: @style', array('@style' => $image_styles[$settings['turnjs_image_style']]));
+    $summary[] = t('Image Style: @style', array('@style' => $image_styles[$settings['turnjs_image_style']]));
   }
   else {
-    $summary[] = t('Turn.js image style: Original image');
-  };
+    $summary[] = t('Image Style: Original image');
+  }
 
-  $summary[] = t('Turn.js display style: @display', array('@display' => ucfirst($settings['turnjs_page_display'])));
+  if (isset($settings['turnjs_page_width']) && isset($settings['turnjs_page_height'])) {
+    $summary[] = t('Page size: ') . $settings['turnjs_page_width'] . 'x' . $settings['turnjs_page_height'] . 'px';
+  }
+
+  $summary[] = t('Page display: @display', array('@display' => ucfirst($settings['turnjs_page_display'])));
 
   return implode('<br />', $summary);
 
@@ -152,7 +172,7 @@ function turnjs_field_formatter_settings_summary($field, $instance, $view_mode) 
  * Implements hook_field_formatter_view().
  */
 function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-
+  // @todo replace with #attached.
   _turnjs_load_header();
 
   $element = array();
@@ -168,57 +188,55 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
     //'#attached' => array('library' => array('turnjs', 'turnjs')),
   );
 
-  // Look for the largest dimensions and apply.
-  $dimensions = array(
-    'width' => '',
-    'height' => '',
-  );
+  if (!isset($display['settings']['turnjs_page_width']) && !isset($display['settings']['turnjs_page_height'])) {
+    // Look for the largest dimensions and apply.
+    $max_width = 0;
+    $max_height = 0;
 
-  $max_width = 0;
-  $max_height = 0;
+    if (!empty($display['settings']['turnjs_image_style'])) {
+      foreach ($items as $item) {
+        $image_uri = $item['uri'];
+        $image_style = $display['settings']['turnjs_image_style'];
+        $derivative_uri = image_style_path($image_style, $image_uri);
 
-  if (!empty($display['settings']['turnjs_image_style'])) {
-    foreach ($items as $item) {
-      $image_uri = $item['uri'];
-      $image_style = $display['settings']['turnjs_image_style'];
-      $derivative_uri = image_style_path($image_style, $image_uri);
+        if (!file_exists($derivative_uri)) {
+          $style = image_style_load($image_style);
+          image_style_create_derivative($style, $image_uri, $derivative_uri);
+        }
 
-      if (!file_exists($derivative_uri)) {
-        $style = image_style_load($image_style);
-        image_style_create_derivative($style, $image_uri, $derivative_uri);
+        $image_info = image_get_info($derivative_uri);
+        if ($image_info['width'] > $max_width) {
+          $max_width = $image_info['width'];
+        }
+        if ($image_info['height'] > $max_height) {
+          $max_height = $image_info['height'];
+        }
       }
-
-      $image_info = image_get_info($derivative_uri);
-      if ($image_info['width'] > $max_width) {
-        $max_width = $image_info['width'];
-      }
-      if ($image_info['height'] > $max_height) {
-        $max_height = $image_info['height'];
-      }
-
     }
-
+    else {
+      foreach ($items as $item) {
+        if ($item['width'] > $max_width) {
+          $max_width = $item['width'];
+        }
+        if ($item['height'] > $max_height) {
+          $max_height = $item['height'];
+        }
+      }
+    }
+    // Set the values.
+    $width = $max_width;
+    $height = $max_height;
   }
   else {
-    foreach ($items as $item) {
-      if ($item['width'] > $max_width) {
-        $max_width = $item['width'];
-      }
-      if ($item['height'] > $max_height) {
-        $max_height = $item['height'];
-      }
-    }
+    $width = $display['settings']['turnjs_page_width'];
+    $height = $display['settings']['turnjs_page_height'];
   }
 
   // Change the display's size depending on settings.
-  if ($display['settings']['turnjs_page_display'] == 'single') {
-    $width = $max_width * 1;
-  }
-  else {
-    $width = $max_width * 2;
+  if ($display['settings']['turnjs_page_display'] != 'single') {
+    $width = $width * 2;
   }
 
-  $height = $max_height;
   $settings['turnjs']['pageWidth'] = $width;
   $settings['turnjs']['pageHeight'] = $height;
   $settings['turnjs']['pageDisplay'] = $display['settings']['turnjs_page_display'];
@@ -260,7 +278,7 @@ function turnjs_get_library_path() {
   // v3
   $path = backdrop_get_path('module', 'turnjs') . '/libraries/turn.js';
   // v4
-  //$path = backdrop_get_path('module', 'turnjs') . '/libraries/turn.js/lib';
+  //$path = backdrop_get_path('module', 'turnjs4') . '/libraries/turn.js/lib';
 
   /*
   // If Libraries API is enabled, make sure it exists before pointing there.

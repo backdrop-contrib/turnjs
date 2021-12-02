@@ -22,8 +22,8 @@
 
               if (page != 1) {
                 //console.log('turning - adding classes');
-                var next_left = view[0];
-                var next_right = view[1];
+                var next_left = view[1] + 1;
+                var next_right = next_left + 1;
                 $(this).find('.p'+next_left).addClass('odd').removeClass('even');
                 $(this).find('.p'+next_right).addClass('even').removeClass('odd');
               }
@@ -31,7 +31,7 @@
             },
             // Fired when a page has been turned.
             turned: function(e, page, view) {
-              //console.log('turned: ', view);
+              //console.log('turned - ', view);
             },
           },
         });

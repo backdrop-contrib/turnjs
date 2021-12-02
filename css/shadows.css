@@ -1,6 +1,12 @@
 .drupal-turnjs,
 .drupal-turnjs * {
   box-sizing: content-box;
+  margin: 0 auto;
+}
+
+.drupal-turnjs .turn-page {
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 /* Adds shadows into centerfold. */
