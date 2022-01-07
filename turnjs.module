@@ -185,10 +185,16 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
     '#display_settings' => $display['settings'],
     '#prefix' => '<div class="drupal-turnjs">',
     '#suffix' => '</div>',
+    // @todo replaces _turnjs_load_header();
     //'#attached' => array('library' => array('turnjs', 'turnjs')),
   );
 
-  if (!isset($display['settings']['turnjs_page_width']) && !isset($display['settings']['turnjs_page_height'])) {
+  // Allow the renderable element to be altered.
+  backdrop_alter('turnjs_field_formatter_view', $element);
+
+  // Compute javascript settings.
+  if (!isset($display['settings']['turnjs_page_width']) &&
+      !isset($display['settings']['turnjs_page_height'])) {
     // Look for the largest dimensions and apply.
     $max_width = 0;
     $max_height = 0;
