@@ -1,23 +1,23 @@
-.drupal-turnjs,
-.drupal-turnjs * {
+.image-turnjs,
+.image-turnjs * {
   box-sizing: content-box;
   margin: 0 auto;
 }
 
-.drupal-turnjs .turn-page {
+.image-turnjs .turn-page {
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 /* Adds shadows into centerfold. */
-.drupal-turnjs .turn-page.odd {
+.image-turnjs .turn-page.odd {
   -webkit-box-shadow:
     -1px 0 1px rgb(0 0 0 / 10%) inset,
     -5px 0 5px rgb(0 0 0 / 10%) inset,
     -10px 0 10px rgb(0 0 0 / 10%) inset,
     -20px 0 30px rgb(0 0 0 / 10%) inset;
 }
-.drupal-turnjs .turn-page.even {
+.image-turnjs .turn-page.even {
   -webkit-box-shadow:
     1px 0 1px rgb(0 0 0 / 10%) inset,
     5px 0 5px rgb(0 0 0 / 10%) inset,
@@ -27,10 +27,10 @@
 
 
 /* @todo Class not supported yet */
-.drupal-turnjs .cover {
+.image-turnjs .cover {
   background: #333;
 }
-.drupal-turnjs .cover h1 {
+.image-turnjs .cover h1 {
   color:white;
   text-align:center;
   font-size:50px;
@@ -39,7 +39,7 @@
 }
 
 /* @todo Class not supported yet */
-.drupal-turnjs .loader {
+.image-turnjs .loader {
   background-image:url(loader.gif);
   width:24px;
   height:24px;

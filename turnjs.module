@@ -183,7 +183,7 @@ function turnjs_field_formatter_view($entity_type, $entity, $field, $instance, $
     '#node' => $entity,
     '#field' => $field,
     '#display_settings' => $display['settings'],
-    '#prefix' => '<div class="drupal-turnjs">',
+    '#prefix' => '<div class="image-turnjs">',
     '#suffix' => '</div>',
     // @todo replaces _turnjs_load_header();
     //'#attached' => array('library' => array('turnjs', 'turnjs')),

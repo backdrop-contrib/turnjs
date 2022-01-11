@@ -12,7 +12,7 @@
 
     Drupal.behaviors.turnJS = {
       attach: function (context, settings) {
-        $('.drupal-turnjs').turn({
+        $('.image-turnjs').turn({
           page: calc_page,
           width: settings.turnjs.pageWidth,
           height: settings.turnjs.pageHeight,
